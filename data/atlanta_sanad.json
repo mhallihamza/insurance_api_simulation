@@ -1,0 +1,16 @@
+{
+  "ATL-77001122": {
+    "full_name": "Karim Bennani",
+    "status": "ACTIVE",
+    "coverage_rate": 0.85,
+    "max_cap": 15000,
+    "tier": "SANAD_COMMERCIALE_FULL"
+  },
+  "100200300": {
+    "full_name": "Youssef El Amrani",
+    "status": "ACTIVE",
+    "coverage_rate": 0.20,
+    "max_cap": 3000,
+    "tier": "SANAD_COMPLEMENTAIRE"
+  }
+}

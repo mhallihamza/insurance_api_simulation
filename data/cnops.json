@@ -1,0 +1,14 @@
+{
+  "550110220": {
+    "full_name": "Omar Benjelloun",
+    "status": "ACTIVE",
+    "coverage_rate": 0.80,
+    "tier": "FONCTION_PUBLIQUE"
+  },
+  "100200300": {
+    "full_name": "Youssef El Amrani",
+    "status": "ACTIVE",
+    "coverage_rate": 0.80,
+    "tier": "FONCTION_PUBLIQUE"
+  }
+}

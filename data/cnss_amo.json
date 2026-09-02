@@ -1,0 +1,20 @@
+{
+  "100200300": {
+    "full_name": "Youssef El Amrani",
+    "status": "ACTIVE",
+    "coverage_rate": 0.70,
+    "tier": "AMO_STANDARD"
+  },
+  "999888777": {
+    "full_name": "Fatima Zahra Mansouri",
+    "status": "ACTIVE",
+    "coverage_rate": 0.90,
+    "tier": "AMO_VIP"
+  },
+  "000000000": {
+    "full_name": "Test Account Expired",
+    "status": "EXPIRED",
+    "coverage_rate": 0.00,
+    "tier": "INACTIVE"
+  }
+}
