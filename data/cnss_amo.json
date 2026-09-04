@@ -6,13 +6,13 @@
     "tier": "AMO_STANDARD"
   },
   "999888777": {
-    "full_name": "Fatima Zahra Mansouri",
+    "full_name": "Mehdi Chraibi",
     "status": "ACTIVE",
-    "coverage_rate": 0.90,
+    "coverage_rate": 0.9,
     "tier": "AMO_VIP"
   },
   "000000000": {
-    "full_name": "Test Account Expired",
+    "full_name": "Hamza Mhalli",
     "status": "EXPIRED",
     "coverage_rate": 0.00,
     "tier": "INACTIVE"

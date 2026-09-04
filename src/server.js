@@ -1,6 +1,9 @@
 const express = require('express');
 const dotenv = require("dotenv");
-dotenv.config();
+const result = dotenv.config();
+
+
+
 const fs = require('fs');
 const path = require('path');
 
@@ -8,7 +11,6 @@ const app = express();
 app.use(express.json());
 
 // Load provider database files dynamically
-// Replace line 11 in src/server.js with this:
 const loadData = (filename) => {
   const filePath = path.join(__dirname, '..', 'data', filename);
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -31,15 +33,18 @@ const checkAuth = (req, res, headerName, expectedValue) => {
   return true;
 };
 
-// Generic Coverage Engine based on num_immatriculation key lookup
+// Generic Coverage Engine based on key lookup
 const processClaim = (database, key, submittedAmount) => {
   const record = database[key];
 
+  // Return a structured 200 payload instead of a failing HTTP error
   if (!record) {
     return {
-      status: "REJECTED",
-      reason: "NUM_IMMATRICULATION_NOT_FOUND",
+      status: "NOT_COVERED",
+      reason: "INVALID_MATRICULE_NOT_FOUND",
+      coverage_rate: "0%",
       amount_covered: 0,
+      covered_amount_mad: 0,
       reste_a_charge: submittedAmount
     };
   }
@@ -48,7 +53,9 @@ const processClaim = (database, key, submittedAmount) => {
     return {
       status: "REJECTED",
       reason: `POLICY_STATUS_${record.status}`,
+      coverage_rate: "0%",
       amount_covered: 0,
+      covered_amount_mad: 0,
       reste_a_charge: submittedAmount
     };
   }
@@ -65,6 +72,7 @@ const processClaim = (database, key, submittedAmount) => {
     coverage_rate: `${record.coverage_rate * 100}%`,
     cap_applied: rawCovered > maxCap,
     amount_covered: coveredAmount,
+    covered_amount_mad: coveredAmount, // Added for standardized engine reading
     reste_a_charge: remainingGap
   };
 };
@@ -73,12 +81,14 @@ const processClaim = (database, key, submittedAmount) => {
 // 1. CNSS (AMO) Endpoint
 // ==========================================
 app.post('/v1/coverage/check', (req, res) => {
+  console.log(process.env.X_CNSS_API_KEY);
   if (!checkAuth(req, res, 'X-CNSS-API-Key', process.env.X_CNSS_API_KEY)) return;
 
   const { num_immatriculation, montant_total } = req.body;
   const result = processClaim(cnssDb, num_immatriculation, parseFloat(montant_total) || 0);
 
-  return res.status(result.status === "APPROVED" ? 200 : 400).json({
+  // Always return 200 OK so workflow engines (n8n/Fusion AI) process the output smoothly
+  return res.status(200).json({
     provider: "CNSS_AMO",
     num_immatriculation: num_immatriculation,
     montant_soumis: montant_total,
@@ -93,10 +103,12 @@ app.post('/v2/eligibility', (req, res) => {
   if (!checkAuth(req, res, 'authorization', 'Bearer u0BiYwVApfVSpoOOSuzE/wGXKWCaCDINOfQHZhOyAZs=')) return;
   console.log("Received Headers:", req.headers);
   console.log("Received Body:", req.body);
+  
   const { matricule, total_engage } = req.body;
   const result = processClaim(cnopsDb, matricule, parseFloat(total_engage) || 0);
 
-  return res.status(result.status === "APPROVED" ? 200 : 400).json({
+  // Always return 200 OK so workflow engines process the failure gracefully
+  return res.status(200).json({
     provider: "CNOPS",
     num_immatriculation: matricule,
     total_engage: total_engage,
@@ -113,7 +125,8 @@ app.post('/v1/atlanta/claim/verify', (req, res) => {
   const { policy_number, claim_total } = req.body;
   const result = processClaim(atlantaDb, policy_number, parseFloat(claim_total) || 0);
 
-  return res.status(result.status === "APPROVED" ? 200 : 400).json({
+  // Always return 200 OK so workflow engines process the failure gracefully
+  return res.status(200).json({
     provider: "ATLANTA_SANAD",
     num_immatriculation: policy_number,
     claim_total: claim_total,
